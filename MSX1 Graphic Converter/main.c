@@ -12,6 +12,7 @@
 # include "SDL2/SDL.h"
 # include <sys/time.h>
 
+# define NAME           "Graphics Converter 0.5"
 # define WINDOW_WIDTH   808                    // Total  window Width
 # define WINDOW_HEIGHT  616                     // Total  Window Height
 # define IMAGE_WIDTH    256
@@ -65,22 +66,22 @@ unsigned int Slot_y[9]={
             ORG_Y+IMAGE_HEIGHT+ORG_Y+IMAGE_HEIGHT+ORG_Y,ORG_Y+IMAGE_HEIGHT+ORG_Y+IMAGE_HEIGHT+ORG_Y,ORG_Y+IMAGE_HEIGHT+ORG_Y+IMAGE_HEIGHT+ORG_Y};
 
 int Palette_msx1[]={
-                0x00,0x00,0x00,      // Transparent
-                0x01,0x01,0x01,      // Black
-                0x3e,0xb8,0x49,      // Medium Green
-                0x74,0xd0,0x7d,      // Light Green
-                0x59,0x55,0xe0,      // Dark Blue
-                0x80,0x76,0xf1,      // Light Blue
-                0xb9,0x5e,0x51,      // Dark Red
-                0x65,0xdb,0xef,      // Cyan
-                0xdb,0x65,0x59,      // Medium Red
-                0xff,0x89,0x7d,      // Light Red
-                0xcc,0xc3,0x5e,      // Dark Yellow
-                0xde,0xd0,0x87,      // Light Yellow
-                0x3a,0xa2,0x41,      // Dark Green
-                0xb7,0x66,0xb5,      // Magenta
-                0xcc,0xcc,0xcc,      // Grey
-                0xff,0xff,0xff};     // White
+    0x00,0x00,0x00,      // Transparent
+    0x01,0x01,0x01,      // Black
+    0x3e,0xb8,0x49,      // Medium Green
+    0x74,0xd0,0x7d,      // Light Green
+    0x59,0x55,0xe0,      // Dark Blue
+    0x80,0x76,0xf1,      // Light Blue
+    0xb9,0x5e,0x51,      // Dark Red
+    0x65,0xdb,0xef,      // Cyan
+    0xdb,0x65,0x59,      // Medium Red
+    0xff,0x89,0x7d,      // Light Red
+    0xcc,0xc3,0x5e,      // Dark Yellow
+    0xde,0xd0,0x87,      // Light Yellow
+    0x3a,0xa2,0x41,      // Dark Green
+    0xb7,0x66,0xb5,      // Magenta
+    0xcc,0xcc,0xcc,      // Grey
+    0xff,0xff,0xff};     // White
     
 int Palette_msx0[]={
     0,0,0,              // Transparent
@@ -147,6 +148,13 @@ int Palette_BW[]={
     0xff, 0xff, 0xff,   // White
     0x01, 0x01,0x01};   // Black
 
+char *Palette_name[]={"MSX Palette 0",
+                      "MSX Palette 1",
+                      "C64 Palette",
+                      "SPECTRUM Palette",
+                      "GAME BOY Palette",
+                      "B & W Palette"};
+
 
 void    init_mem(t_img *e);
 void    ft_memdel(void **ap);
@@ -163,6 +171,7 @@ void    MSXoutput(t_img *e);
 void    ReadPalette(t_img *e);
 void    ImageProcess(t_img *e);
 void    Do_it (t_img *e);
+void    DrawSlot(t_img *e,int Start_x, int Start_y);
 SDL_Surface *SDL_loadBMP(Uint32 format,t_img *e);
 
 
@@ -177,31 +186,28 @@ void ReadPalette(t_img *e)
     int id;
     id=0;
     
+    printf("\n-> Using ");
+    printf("%s",Palette_name[e->UsePalette]);
+    
     switch (e->UsePalette)
     {
         case 0:
             e->Nb_colors=15;    // Number of colors in MSX0 Palette +1
-            printf("\n-> USing MSX Palette 0");
             break;
         case 1:
             e->Nb_colors=15;    // Number of colors in MSX1 Palette +1
-            printf("\n-> USing MSX Palette 1");
             break;
         case 2:
             e->Nb_colors=15;    // Number of colors in C64 Palette +1
-            printf("\n-> USing C64 Palette");
             break;
         case 3:
             e->Nb_colors=15;    // Number of colors in SPECTRUM Palette +1
-            printf("\n-> USing SPECTRUM Palette");
             break;
         case 4:
             e->Nb_colors=3;    // Number of colors in GAMEBOY Palette +1
-            printf("\n-> USing GAME BOY Palette 0");
             break;
         case 5:
             e->Nb_colors=2;    // Number of colors in B & W Palette +1
-            printf("\n-> USing B & W Palette 0");
             break;
 
     }
@@ -298,8 +304,9 @@ int   key_hook(t_img *e)
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
             e->slot++;
-            if (e->slot>9)
+            if (e->slot>=9)
                 e->slot=1;
+            DrawSlot(e, Slot_x[e->slot], Slot_y[e->slot]);
         }
         
         if (keystates[SDL_SCANCODE_1]  )                // Tolerance --
@@ -421,12 +428,13 @@ int SDL_init(t_img *e, SDL_Window *win, SDL_Renderer *ren,int width , int height
     
     /* Création de la fenêtre  */
     Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_MOUSE_FOCUS;
-    e->win = SDL_CreateWindow("MSX1 Graphic Converter", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,width, height, flags);
+    e->win = SDL_CreateWindow(NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,width, height, flags);
     if(NULL == e->win)
     {
         fprintf(stderr, "SDL_CreateWindow Error : %s", SDL_GetError());
         return (EXIT_FAILURE);
     }
+    
     
     /* Création du renderer */
     e->ren = SDL_CreateRenderer(e->win, -1, SDL_RENDERER_ACCELERATED);
@@ -510,8 +518,6 @@ void init_mem(t_img *e)
 {
     if (SDL_init(e,e->win,e->ren,WINDOW_WIDTH,WINDOW_HEIGHT) !=0)           // SDL2 Initialisation
         ft_exit(e,5,"SDL2 Init Problem !");
-    
-    e->click_clock=clock()+(CLOCKS_PER_SEC/10);
 }
 
 //**--------------------------------**
@@ -1144,7 +1150,7 @@ void MSXoutput(t_img *e)
     unsigned char MsxHeader[7]= {0xFE,0x00,0x00,0xFF,0x37,0x00,0x00};
     
     
-    FILE *f = fopen("./data/dd.sc2", "w");
+    FILE *f = fopen(g_argv[2], "w");
     for (i=0; i<7; i++) {
         fputc(MsxHeader[i], f);
     }
@@ -1192,12 +1198,26 @@ void DrawRenderImage(t_img *e,int Start_x, int Start_y)
     }
 }
 
+void DrawSlot(t_img *e,int Start_x, int Start_y)
+{
+    int x,y;
+    
+    for (y=0;y<=191;y++)
+    {
+        for (x=0; x<=255; x++) {
+            SDL_pixel_put_to_image(e, Start_x+x, Start_y+y, 0xFFFFFFFF);
+        }
+    }
+    SDL_render(e);
+}
+
 void Do_it (t_img *e)
 {
     ImageProcess(e);
     
     DrawRenderImage(e, Slot_x[e->slot], Slot_y[e->slot]);
     
+
     SDL_render(e);
     
      printf("\n-> Color Tolerance : %d",e->tolerance);
@@ -1211,18 +1231,36 @@ void Do_it (t_img *e)
 
 void ParamsCheck(t_img *e,int nb)
 {
+    char i;
     if (nb<3)
     {
         printf("\nYou must enter input file and output file. Others parameters are optional.");
       
-        printf("\n GraphConverter <Input file> <output file> [<no interface> <palette> <color tolerance> <detail level>]");
+        printf("\n GraphConverter <Input file> <output file> [<interface> <palette> <color tolerance> <detail level>]\n");
+        
         printf("\n<input file> : path and name of the BMP file to convert");
         printf("\n<output file> : pathand name of the saved file");
-        printf("\n<graphique interface> : different than 0, graphic interface will not be shown");
+        printf("\n<interface> : if 0, quick quick graphic interface one convertion is done");
         printf("\n<palette> : Palette number to use");
         printf("\n<color tolerance> : number between 0 and 100");
         printf("\n<detail level> : number betwwen 0 and 255");
-         ft_exit(e,6,"");
+        printf("\n----------------");
+        printf("\nList of palettes:");
+        for(i=0;i<NB_PALETTE;i++)
+        {
+            printf("\n%d : %s",i,Palette_name[i]);
+        }
+        printf("\n----------------");
+        printf("\nList of Key in interface:");
+        printf("\n1 : Color tolerance -");
+        printf("\n2 : Color tolerance +");
+        printf("\n8 : Detail level -");
+        printf("\n9 : Detail Level +");
+        printf("\nP : use Next Palette");
+        printf("\nS : New Slot image");
+        printf("\nESC : Quit program");
+        
+        ft_exit(e,6,"");
     }
     if (g_argv[6]!=NULL)
     {
@@ -1230,7 +1268,7 @@ void ParamsCheck(t_img *e,int nb)
     }
     if (g_argv[5]!=NULL)
     {
-        e->detaillevel=atoi(g_argv[5]);
+        e->tolerance=atoi(g_argv[5]);
     }
     if (g_argv[4]!=NULL)
     {
@@ -1253,12 +1291,14 @@ int main(int argc, char *argv[]) {
     t_img *e = NULL;
     SDL_Event ev;
     
-    printf("\nGraphics Converter...\n");
+    printf("\n");
+    printf(NAME);
     
     if (!(e = (t_img*)calloc(1,sizeof(t_img))))                             // Structure Init
         ft_exit(e,4,"Malloc error: ->e");
     
     init_mem(e);
+        e->click_clock=clock()+(CLOCKS_PER_SEC/10);
     
     
     //Default parameters
@@ -1274,12 +1314,17 @@ int main(int argc, char *argv[]) {
     ParamsCheck(e,argc);
     
     load_image(e);
+    
     SDL_render(e);
+    
     SDL_LockSurface(e->img);
     SDL_SetRenderTarget(e->ren, NULL);
 
     Do_it(e);
-
+    
+    if (e->interface==0)
+        ft_exit(e,0,"END");
+    
     while (1) // infinite loop
     {
         e->clock=clock();
