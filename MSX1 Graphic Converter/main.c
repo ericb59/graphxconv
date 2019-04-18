@@ -553,7 +553,6 @@ void SDL_render(t_img *e)
     SDL_SetRenderTarget(e->ren, NULL);
     SDL_RenderCopy(e->ren, e->screen_0,NULL,NULL);
     SDL_RenderPresent(e->ren);
-
 }
 
 //**--------------------------------**
@@ -909,7 +908,6 @@ void ImageProcess(t_img *e)
                 detail[i][j]=corfinal;
             }
         }
-        
         
         for (i=0; i<=255; i++)
         {
