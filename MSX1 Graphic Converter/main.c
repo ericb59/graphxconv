@@ -403,7 +403,7 @@ void ft_exit(t_img *e, int error, char *text)
     
     ft_memdel((void **)&e);
     exit(EXIT_SUCCESS);
-}
+} 
 
 
 //**--------------------------------**
