@@ -405,8 +405,6 @@ void ft_exit(t_img *e, int error, char *text)
     exit(EXIT_SUCCESS);
 }
 
-
-
 //**--------------------------------**
 //      Initialisation of the SDL
 // Window, render & surface creation
@@ -502,7 +500,6 @@ int load_image(t_img *e)
     
     return(1);
 }
-
 
 //**--------------------------------**
 //    Mem variables initialisation
