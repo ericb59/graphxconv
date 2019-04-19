@@ -8,10 +8,15 @@ graphxconv: launches on the command line. A graphical interface is then availabl
 Several color palettes are available.
 
 2 versions of the basic MSX palette
+
 1 truncated version of the MSX palette for conversion to Black and White.
+
 A palette simulating the display on a C64
+
 A palette simulating the display on a Spectrum
+
 A palette simulating the display on a Game Boy
+
 A two-color palette simulating the black and white display.
 
 Although palettes of microcomputers other than the MSX are proposed, the export of the converted image is currently only in the binary format for MSX (Loading with BLOAD). Other saving templates may be added later.
@@ -21,6 +26,7 @@ graphxconv <Input file> <output file> [-i<n> -p<n> -t<n> -d<n> -c -h]
 
 The first two parameters are mandatory. 
 <Input file> : corresponds to the path and name of the BMP file to be converted
+
 <output file>: Corresponds to the path and name of the converted file in MSX format
 
 Other parameters are optional. If they are not specified, the default settings are used. 
@@ -45,12 +51,19 @@ Other parameters are optional. If they are not specified, the default settings a
 -h: displays the help.
 
 The list of palettes included in the software.
- 0: MSX Palette 0 
+
+0: MSX Palette 0 
+
 1: MSX Palette 1 
+
 2: C64 Palette 
+
 3: SPECTRUM Palette 
+
 4: GAME BOY Palette 
+
 5: B & W Palette 
+
 6: MSX SC2 B & W (Compatible MSX1, Screen 2)
 
 The GUI once 'graphxconv' is launched, is opening a window of 808 x 616 pixels.
@@ -60,14 +73,22 @@ The first image displayed at the top left is the original image. Once the conver
 If you are not satisfied with the result, you can try a new conversion by changing parameters, without having to restart the program. Use the following keys:
 
 Key '1': Decrements the color tolerance setting by 20 units 
+
 Key '2': Increases the color tolerance setting by 20 units 
+
 Key '8': Decrements the parameter from the Level of detail by 20 units 
+
 Key '9': Increments the Detail level setting of 20 units
+
 key 'P': Use the following palette (0 -> 6 -> 0 ->) 
+
 key 'S': Insert a new picture slot
+
 key 'ESC' : Exit the program
 
 Each press on a control key, (except ESC and S) restarts a new conversion of the original image, displays the result, and saves the result under the name you specified. 
+
 Each new conversion is displayed over the previous one. If you want to compare multiple versions of the converted image, insert a new image slot by pressing the 'S' key. 
+
 A new portion of the window will emerge, and the next conversion will be displayed in this new Slot. You can open a total of 8 additional slots, and thus compare 8 versions of the converted picture.
 
