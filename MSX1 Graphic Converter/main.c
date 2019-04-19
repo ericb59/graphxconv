@@ -1080,7 +1080,7 @@ void Info(t_img *e)
 {
     printf("\n "); printf(NAME); printf(VERSION);printf(DATE);
     printf("\n is converting 256 x 192 pixels BMP Images \n to a fixed color palette using CIEDE2000 Algorythm");
-    printf("\n Original convesion Routine) by Leandro Correia");
+    printf("\n Original convesion Routine by Leandro Correia");
     printf("\n This tool was coded in C, with SDL2 Graphic Library\n by Eric Boez 2019 - BZ Prod Game Studio");
     printf("\n For MSX1 Screen2 mode with 16 colors palette support.");
     printf("\n This tool is provided as is, with no guaranty\n Under the Creative Commons CC BY_SA 4.0 license");

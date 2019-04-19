@@ -16,7 +16,6 @@
 # define GETCURRENTDIR getcwd
 # endif
 
-
 #ifndef converter_h
 #define converter_h
 
