@@ -6,6 +6,8 @@
 //  Copyright © 2019 Eric Boez. All rights reserved.
 //
 
+// COMPIL WITH SDL2.0 LIBRARY
+//
 # include "converter.h"
 
 

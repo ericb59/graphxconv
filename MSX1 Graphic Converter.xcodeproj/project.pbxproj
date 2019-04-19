@@ -34,6 +34,8 @@
 		C29BCF052269069400733DB2 /* converter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = converter.h; sourceTree = "<group>"; };
 		C29BCF062269D37D00733DB2 /* msximages */ = {isa = PBXFileReference; lastKnownFileType = folder; path = msximages; sourceTree = "<group>"; };
 		C29BCF072269DF0100733DB2 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = "<group>"; };
+		C29BCF08226A1B7200733DB2 /* Graphx Converer FR.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Graphx Converer FR.pdf"; sourceTree = "<group>"; };
+		C29BCF09226A1B7200733DB2 /* Graphx Converter EN.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Graphx Converter EN.pdf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +70,8 @@
 		C29BCEF3226470F600733DB2 /* MSX1 Graphic Converter */ = {
 			isa = PBXGroup;
 			children = (
+				C29BCF08226A1B7200733DB2 /* Graphx Converer FR.pdf */,
+				C29BCF09226A1B7200733DB2 /* Graphx Converter EN.pdf */,
 				C29BCF072269DF0100733DB2 /* bin */,
 				C29BCF062269D37D00733DB2 /* msximages */,
 				C29BCF0322670EF300733DB2 /* data */,
