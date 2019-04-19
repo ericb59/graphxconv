@@ -1,178 +1,12 @@
-// MSX Graphic Conversion Routine) Original version by Leandro Correia (2019)
-// port to C with SDL2 library By Eric Boez
+// MSX Graphics Conversion with CIEDE2000 Algorythm
+// Original routine version by Leandro Correia (2019)
+// port to C with SDL2 library By Eric Boez 2019
 //
 //  Created by Eric Boez on 15/04/2019.
 //  Copyright © 2019 Eric Boez. All rights reserved.
 //
 
-# include <stdint.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <math.h>
-# include "SDL2/SDL.h"
-# include <sys/time.h>
-
-# define NAME           "Graphics Converter 0.5"
-# define WINDOW_WIDTH   808                    // Total  window Width
-# define WINDOW_HEIGHT  616                     // Total  Window Height
-# define IMAGE_WIDTH    256
-# define IMAGE_HEIGHT   192
-# define ORG_X          10                      // X position of Original image
-# define ORG_Y          10                      // Y position of Original image
-# define NB_PALETTE     5                       // How many Palette available
-
-
-# define Pi 3.141592653589793238462643383279
-
-typedef struct    s_img                    //  Structure to store all needed variables
-{
-    SDL_Window      *win;
-    SDL_Renderer    *ren;
-    SDL_Surface     *image_temp;
-    SDL_Texture     *texture_temp;
-    SDL_Texture     *screen_0;
-    SDL_Surface     *mouse_pointer;
-    SDL_Surface     *img;
-    clock_t         click_clock;
-    clock_t         clock;
-    unsigned int    Rcol;
-    unsigned int    Gcol;
-    unsigned int    Bcol;
-    unsigned int    tolerance;
-    unsigned int    detaillevel;
-    unsigned int    RenderImage[192][256];
-    unsigned int    msxr[16];
-    unsigned int    msxg[16];
-    unsigned int    msxb[16];
-    unsigned char   UsePalette;
-    unsigned char   Nb_colors;
-    unsigned char   slot;
-    unsigned char   interface;
-    char            *savefile;
-}   t_img;
-
-char **g_argv;
-
-
-unsigned char    msxdump[6144*2];
-
-unsigned int Slot_x[9]={
-            ORG_X,ORG_X+IMAGE_WIDTH+ORG_X,ORG_X+IMAGE_WIDTH+ORG_X+IMAGE_WIDTH+ORG_X,
-            ORG_X,ORG_X+IMAGE_WIDTH+ORG_X,ORG_X+IMAGE_WIDTH+ORG_X+IMAGE_WIDTH+ORG_X,
-            ORG_X,ORG_X+IMAGE_WIDTH+ORG_X,ORG_X+IMAGE_WIDTH+ORG_X+IMAGE_WIDTH+ORG_X};
-unsigned int Slot_y[9]={
-            ORG_Y,ORG_Y,ORG_Y,
-            ORG_Y+IMAGE_HEIGHT+ORG_Y,ORG_Y+IMAGE_HEIGHT+ORG_Y,ORG_Y+IMAGE_HEIGHT+ORG_Y,
-            ORG_Y+IMAGE_HEIGHT+ORG_Y+IMAGE_HEIGHT+ORG_Y,ORG_Y+IMAGE_HEIGHT+ORG_Y+IMAGE_HEIGHT+ORG_Y,ORG_Y+IMAGE_HEIGHT+ORG_Y+IMAGE_HEIGHT+ORG_Y};
-
-int Palette_msx1[]={
-    0x00,0x00,0x00,      // Transparent
-    0x01,0x01,0x01,      // Black
-    0x3e,0xb8,0x49,      // Medium Green
-    0x74,0xd0,0x7d,      // Light Green
-    0x59,0x55,0xe0,      // Dark Blue
-    0x80,0x76,0xf1,      // Light Blue
-    0xb9,0x5e,0x51,      // Dark Red
-    0x65,0xdb,0xef,      // Cyan
-    0xdb,0x65,0x59,      // Medium Red
-    0xff,0x89,0x7d,      // Light Red
-    0xcc,0xc3,0x5e,      // Dark Yellow
-    0xde,0xd0,0x87,      // Light Yellow
-    0x3a,0xa2,0x41,      // Dark Green
-    0xb7,0x66,0xb5,      // Magenta
-    0xcc,0xcc,0xcc,      // Grey
-    0xff,0xff,0xff};     // White
-    
-int Palette_msx0[]={
-    0,0,0,              // Transparent
-    0,0,0,              // Black
-    36,219,36,          // Medium Green
-    109,255,109,        // Light Green
-    36,36,255,          // Dark Blue
-    73,109,255,         // Light Blue
-    182,36,36,          // Dark Red
-    73,219,255,         // Cyan
-    255,36,36,          // Medium Red
-    255,109,109,        // Light Red
-    219,219,36,         // Dark Yellow
-    219,219,146,        // Light Yellow
-    36,146,36,          // Dark Green
-    219,73,182,         // Magenta
-    182,182,182,        // Grey
-    255,255,255};       // White
-
-int Palette_c64[]={
-    0, 0, 0,            // black
-    255, 255, 255,      // white
-    136, 57, 50,        // red
-    103, 182, 189,      // cyan
-    139, 63, 150,       // purple
-    85, 160, 73,        // green
-    64, 49, 141,        // blue
-    191, 206, 114,      // yellow
-    139, 84, 41,        // orange
-    87, 66, 0,          // brown
-    184, 105, 98,       // light red
-    80, 80, 80,         // dark grey
-    120, 120, 120,      // grey
-    148, 224, 137,      // light green
-    120, 105, 196,      // light blue
-    159, 159, 159};     // light grey;
-
-int Palette_spectrum[]={
-    0, 0, 0,            // black
-    0, 0, 170,          // basic blue
-    170, 0, 0,          // basic red
-    170, 0, 170,        // basic magenta
-    0, 170, 0,          // basic green
-    0, 170, 170,        // basic cyan
-    170, 170, 0,        // basic yellow
-    170, 170, 170,      // basic white
-    0, 0, 0,            // black
-    0, 0, 255,          // bright blue
-    255, 0, 0,          // bright red
-    255, 0, 255,        // bright magenta
-    0, 255, 0,          // bright green
-    0, 255, 255,        // bright cyan
-    255, 255, 0,        // bright yellow
-    255, 255, 255};     // bright white
-
-int Palette_gameboy[]={
-    0x0f,0x38,0x0f,
-    0x30,0x62,0x30,
-    0x8b,0xac,0x0f,
-    0x9b,0xbc,0x0f};
-
-int Palette_BW[]={
-    0x00, 0x00, 0x00,   // Black
-    0xff, 0xff, 0xff,   // White
-    0x01, 0x01,0x01};   // Black
-
-char *Palette_name[]={"MSX Palette 0",
-                      "MSX Palette 1",
-                      "C64 Palette",
-                      "SPECTRUM Palette",
-                      "GAME BOY Palette",
-                      "B & W Palette"};
-
-
-void    init_mem(t_img *e);
-void    ft_memdel(void **ap);
-void    free_SDL(t_img *e);
-void    ft_exit(t_img *e, int error, char *text);
-int     SDL_init(t_img *e, SDL_Window *win, SDL_Renderer *ren,int width , int height);
-void    SDL_put_img(int sx,int sy, int sw, int sh, int dx, int dy, t_img *e, SDL_Surface *surf_src, SDL_Surface *surf_dest);
-int     load_image(t_img *e);
-void    SDL_render(t_img *e);
-void    SDL_pixel_put_to_image(t_img *e, int x, int y, unsigned int color);
-Uint32  SDL_getpixel(SDL_Surface *surface, int x, int y);
-double  calcdist2000(double r1, double g1, double b1, double r2, double g2, double b2);
-void    MSXoutput(t_img *e);
-void    ReadPalette(t_img *e);
-void    ImageProcess(t_img *e);
-void    Do_it (t_img *e);
-void    DrawSlot(t_img *e,int Start_x, int Start_y);
-SDL_Surface *SDL_loadBMP(Uint32 format,t_img *e);
+# include "converter.h"
 
 
 //**--------------------------------**
@@ -185,9 +19,6 @@ void ReadPalette(t_img *e)
     unsigned char i;
     int id;
     id=0;
-    
-    printf("\n-> Using ");
-    printf("%s",Palette_name[e->UsePalette]);
     
     switch (e->UsePalette)
     {
@@ -208,6 +39,9 @@ void ReadPalette(t_img *e)
             break;
         case 5:
             e->Nb_colors=2;    // Number of colors in B & W Palette +1
+            break;
+        case 6:
+            e->Nb_colors=15;    // Number of colors in MSX B & W Palette +1
             break;
 
     }
@@ -248,6 +82,12 @@ void ReadPalette(t_img *e)
                 e->msxg[i]=Palette_BW[id+1];
                 e->msxb[i]=Palette_BW[id+2];
                 break;
+            case 6:
+                e->msxr[i]=Palette_msxbw[id];
+                e->msxg[i]=Palette_msxbw[id+1];
+                e->msxb[i]=Palette_msxbw[id+2];
+                break;
+
         }
         id=id+3;
     }
@@ -313,8 +153,9 @@ int   key_hook(t_img *e)
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
             e->tolerance=e->tolerance-20;
-            if (e->tolerance<=0)
-                e->tolerance=0;
+            if (e->tolerance<=TOLERANCE_MIN)
+                e->tolerance=TOLERANCE_MIN;
+            PrintDo(e);
             Do_it(e);
 
         }
@@ -323,20 +164,21 @@ int   key_hook(t_img *e)
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
             e->tolerance=e->tolerance+20;
-            if (e->tolerance>=100)
-                e->tolerance=100;
+            if (e->tolerance>=TOLERANCE_MAX)
+                e->tolerance=TOLERANCE_MAX;
+            PrintDo(e);
             Do_it(e);
 
            
         }
         
-    
         if (keystates[SDL_SCANCODE_9] )                // Detal level  --
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
             e->detaillevel=e->detaillevel+20;
-            if (e->detaillevel>=255)
-                e->detaillevel=255;
+            if (e->detaillevel>=DETAIL_MAX)
+                e->detaillevel=DETAIL_MAX;
+            PrintDo(e);
             Do_it(e);
         }
         
@@ -344,8 +186,9 @@ int   key_hook(t_img *e)
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
             e->detaillevel=e->detaillevel-20;
-            if (e->detaillevel<=0)
-                e->detaillevel=0;
+            if (e->detaillevel<=DETAIL_MIN)
+                e->detaillevel=DETAIL_MIN;
+            PrintDo(e);
             Do_it(e);
            
         }
@@ -356,6 +199,7 @@ int   key_hook(t_img *e)
             e->UsePalette++;
             if (e->UsePalette>NB_PALETTE)
                 e->UsePalette=0;
+            PrintDo(e);
             Do_it(e);
          
         }
@@ -428,13 +272,12 @@ int SDL_init(t_img *e, SDL_Window *win, SDL_Renderer *ren,int width , int height
     
     /* Création de la fenêtre  */
     Uint32 flags = SDL_WINDOW_SHOWN | SDL_WINDOW_MOUSE_FOCUS;
-    e->win = SDL_CreateWindow(NAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,width, height, flags);
+    e->win = SDL_CreateWindow(WNAME, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,width, height, flags);
     if(NULL == e->win)
     {
         fprintf(stderr, "SDL_CreateWindow Error : %s", SDL_GetError());
         return (EXIT_FAILURE);
     }
-    
     
     /* Création du renderer */
     e->ren = SDL_CreateRenderer(e->win, -1, SDL_RENDERER_ACCELERATED);
@@ -853,8 +696,8 @@ void ImageProcess(t_img *e)
     int octetfinal[8], octetvalue[8];
     int toner[5],toneg[5],toneb[5];
     double distcolor[5];
-    double detail[256][192];        //Detail map
-    int imagedata[255][192];        //Luminosity data of original image
+    double detail[IMAGE_WIDTH][IMAGE_HEIGHT];        //Detail map
+    int imagedata[IMAGE_WIDTH][IMAGE_HEIGHT];        //Luminosity data of original image
     int cor,cor1,cor2,cor3,dif1,dif2,corfinal,corfinal2,id,bestdistance,dist,finaldist,finaldista,finaldistb;
     int bestcor1=0;
     int bestcor2=0;
@@ -869,20 +712,20 @@ void ImageProcess(t_img *e)
     ReadPalette(e);
     
     //Reads all luminosity values
-    for (j=0; j<=191;j++)
+    for (j=0; j<=IMAGE_HEIGHT-1;j++)
     {
-        for (i=0;i<=255;i++)
+        for (i=0;i<=IMAGE_WIDTH-1;i++)
         {
             SDL_GetRGBA(SDL_getpixel(e->img, i, j), e->img->format, &r, &g, &b, &a);
             imagedata[i][j]=(r+g+b)/3;
         }
     }
     
-    if (e->detaillevel <255)
+    if (e->detaillevel <IMAGE_WIDTH-1)
     {
-        for (j=1; j<=191;j++)
+        for (j=1; j<=IMAGE_HEIGHT-1;j++)
         {
-            for (i=1;i<=254;i++)
+            for (i=1;i<=IMAGE_WIDTH-2;i++)
             {
                 cor=imagedata[i-1][j];
                 cor2=imagedata[i][j];
@@ -915,20 +758,20 @@ void ImageProcess(t_img *e)
             }
         }
         
-        for (i=0; i<=255; i++)
+        for (i=0; i<=IMAGE_WIDTH-1; i++)
         {
             detail[i][0]=0;
-            detail[i][191]=0;
+            detail[i][IMAGE_HEIGHT-1]=0;
         }
-        for (i=0; i<=191; i++)
+        for (i=0; i<=IMAGE_HEIGHT-1; i++)
         {
             detail[0][i]=0;
-            detail[255][i]=0;
+            detail[IMAGE_WIDTH-1][i]=0;
         }
         
-        for (j=0; j<=191;j++)
+        for (j=0; j<=IMAGE_HEIGHT-1;j++)
         {
-            for (i=0;i<=255;i++)
+            for (i=0;i<=IMAGE_WIDTH-1;i++)
             {
                 if (detail[i][j]<1)
                 {
@@ -940,9 +783,9 @@ void ImageProcess(t_img *e)
     }
     else
     {
-        for (j=0; j<=191;j++)
+        for (j=0; j<=IMAGE_HEIGHT-1;j++)
         {
-            for (i=0;i<=255;i++)
+            for (i=0;i<=IMAGE_WIDTH-1;i++)
             {
                 detail[i][j]=1;
             }
@@ -950,7 +793,7 @@ void ImageProcess(t_img *e)
     }
     
     ///////////////////////
-    while (y<192)
+    while (y<IMAGE_HEIGHT)
     {
         bestdistance=99999999;
         for (i=0;i<=7;i++)
@@ -1013,7 +856,6 @@ void ImageProcess(t_img *e)
                                 octetvalue[i]=j;
                             }
                         }
-                        
                         
                         dist=dist+finaldist;
                         if (dist > bestdistance)
@@ -1126,7 +968,7 @@ void ImageProcess(t_img *e)
             y=y-8;
             x=x+8;
         }
-        if (x>255){
+        if (x>IMAGE_WIDTH-1){
             x=0;
             y=y+8;
         }
@@ -1190,9 +1032,9 @@ void DrawRenderImage(t_img *e,int Start_x, int Start_y)
 {
     int x,y;
 
-    for (y=0;y<=191;y++)
+    for (y=0;y<=IMAGE_HEIGHT-1;y++)
     {
-        for (x=0; x<=255; x++) {
+        for (x=0; x<=IMAGE_WIDTH-1; x++) {
             SDL_pixel_put_to_image(e, Start_x+x, Start_y+y, e->RenderImage[y][x]);
         }
     }
@@ -1202,14 +1044,22 @@ void DrawSlot(t_img *e,int Start_x, int Start_y)
 {
     int x,y;
     
-    for (y=0;y<=191;y++)
+    for (y=0;y<=IMAGE_HEIGHT-1;y++)
     {
-        for (x=0; x<=255; x++) {
+        for (x=0; x<=IMAGE_WIDTH-1; x++) {
             SDL_pixel_put_to_image(e, Start_x+x, Start_y+y, 0xFFFFFFFF);
         }
     }
     SDL_render(e);
 }
+
+char PrintDo(t_img *e)
+{
+    printf("\n-> Computing ... Using ");
+    printf("%s",Palette_name[e->UsePalette]);
+    return(1);
+}
+
 
 void Do_it (t_img *e)
 {
@@ -1219,66 +1069,54 @@ void Do_it (t_img *e)
     
 
     SDL_render(e);
-    
+     printf("\n-> Interface : %d",e->interface);
      printf("\n-> Color Tolerance : %d",e->tolerance);
      printf("\n-> Detail Level : %d",e->detaillevel);
      printf("\n________________________");
     
     MSXoutput(e);
 }
-
-
-
-void ParamsCheck(t_img *e,int nb)
+void Info(t_img *e)
+{
+    printf("\n "); printf(NAME); printf(VERSION);printf(DATE);
+    printf("\n is converting 256 x 192 pixels BMP Images \n to a fixed color palette using CIEDE2000 Algorythm");
+    printf("\n Original conver by Routine) by Leandro Correia");
+    printf("\n This tool was coded in C, with SDL2 Graphic Library\n by Eric Boez 2019 - BZ Prod Game Studio");
+    printf("\n For MSX1 Screen2 mode with 16 colors palette support.");
+    printf("\n This tool is provided as is, with no guaranty\n Under the Creative Commons CC BY_SA 4.0 license");
+}
+void Usage(t_img *e)
 {
     char i;
-    if (nb<3)
+    printf("\n GraphxConverter usage : \n graphxconv <Input file> <output file> [-i<n> -p<n> -t<n> -d<n> -c -h] \n");
+    
+    printf("\n<input file> : path and name of the BMP file to convert");
+    printf("\n<output file> : path and name of the saved file");
+    printf("\n-i<n> : if n=0, quit Graphic Interfac once conversion is done. (ex: -i0)");
+    printf("\n-p<n> : Palette number to use (ex : -p3)");
+    printf("\n-t<n> : Color Tolerance. <n> must be between 0 and 100 (ex: -t90)");
+    printf("\n-d<n> : Details Level. <n> must be between 0 and 255 (ex: -d30)");
+    printf("\n-c : Show Copyright Informations");
+    printf("\n-h : the help text you are reading at the moment !");
+    printf("\n----------------");
+    printf("\nList of palettes:");
+    for(i=0;i<=NB_PALETTE;i++)
     {
-        printf("\nYou must enter input file and output file. Others parameters are optional.");
-      
-        printf("\n GraphConverter <Input file> <output file> [<interface> <palette> <color tolerance> <detail level>]\n");
-        
-        printf("\n<input file> : path and name of the BMP file to convert");
-        printf("\n<output file> : pathand name of the saved file");
-        printf("\n<interface> : if 0, quick quick graphic interface one convertion is done");
-        printf("\n<palette> : Palette number to use");
-        printf("\n<color tolerance> : number between 0 and 100");
-        printf("\n<detail level> : number betwwen 0 and 255");
-        printf("\n----------------");
-        printf("\nList of palettes:");
-        for(i=0;i<NB_PALETTE;i++)
-        {
-            printf("\n%d : %s",i,Palette_name[i]);
-        }
-        printf("\n----------------");
-        printf("\nList of Key in interface:");
-        printf("\n1 : Color tolerance -");
-        printf("\n2 : Color tolerance +");
-        printf("\n8 : Detail level -");
-        printf("\n9 : Detail Level +");
-        printf("\nP : use Next Palette");
-        printf("\nS : New Slot image");
-        printf("\nESC : Quit program");
-        
-        ft_exit(e,6,"");
+        printf("\n%d : %s",i,Palette_name[i]);
     }
-    if (g_argv[6]!=NULL)
-    {
-        e->detaillevel=atoi(g_argv[6]);
-    }
-    if (g_argv[5]!=NULL)
-    {
-        e->tolerance=atoi(g_argv[5]);
-    }
-    if (g_argv[4]!=NULL)
-    {
-        e->UsePalette=atoi(g_argv[4]);
-    }
-    if (g_argv[3]!=NULL)
-    {
-        e->interface=atoi(g_argv[3]);
-    }
+    printf("\n----------------");
+    printf("\nList of Keys in Graphic Interface:");
+    printf("\n1 : Color tolerance -");
+    printf("\n2 : Color tolerance +");
+    printf("\n8 : Detail level -");
+    printf("\n9 : Detail Level +");
+    printf("\nP : use Next Palette");
+    printf("\nS : New Slot image");
+    printf("\nESC : Quit program");
+    
+    ft_exit(e,6,"");
 }
+
 
 //**--------------------------------**
 //              Main
@@ -1288,11 +1126,14 @@ void ParamsCheck(t_img *e,int nb)
 
 int main(int argc, char *argv[]) {
     
+    char C_err=0;
+    
     t_img *e = NULL;
     SDL_Event ev;
     
     printf("\n");
     printf(NAME);
+    printf("\n");
     
     if (!(e = (t_img*)calloc(1,sizeof(t_img))))                             // Structure Init
         ft_exit(e,4,"Malloc error: ->e");
@@ -1311,7 +1152,73 @@ int main(int argc, char *argv[]) {
 
     
     g_argv = argv;
-    ParamsCheck(e,argc);
+    ////////////////////// Parameters Checking
+
+    if (argc<3)
+    {
+        printf("\n ERROR : Missing Input file and/or Output file name. \nType the command line with -h for help\n");
+        C_err=1;
+    }
+    else
+    {
+        ++argv;
+        --argc;
+        ++argv;
+        --argc;
+    }
+
+    while ((argc > 1) && (argv[1][0] == '-'))
+    {
+        
+        switch (argv[1][1])
+        {
+            case 'i':
+                e->interface=atoi(&argv[1][2]);
+                break;
+                
+            case 'p':
+                e->UsePalette=atoi(&argv[1][2]);
+                if (e->UsePalette>NB_PALETTE)
+                    e->UsePalette=NB_PALETTE;
+                break;
+                
+            case 't':
+                 e->tolerance=atoi(&argv[1][2]);
+                 if (e->tolerance>TOLERANCE_MAX || e->tolerance<TOLERANCE_MIN)
+                 {
+                     printf("\n ERROR : Wrong Color Tolerance parameter\n");
+                     Usage(e);
+                 }
+                break;
+            case 'd':
+                e->detaillevel=atoi(&argv[1][2]);
+                if (e->detaillevel>DETAIL_MAX || e->detaillevel<DETAIL_MIN)
+                {
+                    printf("\n ERROR : Wrong Details Level parameter\n");
+                    Usage(e);
+                }
+                break;
+            case 'c':
+                C_err=1;
+                Info(e);
+                ft_exit(e,0,"\nSee you !");
+                break;
+            case 'h':
+                Usage(e);
+                ft_exit(e,0,"");
+                break;
+            default:
+                printf("\nWrong Argument: %s\n", argv[1]);
+                Usage(e);
+        }
+        
+        ++argv;
+        --argc;
+        if (C_err==1)
+             ft_exit(e,0,"\n");
+    }
+
+    ////////////////////////////////////
     
     load_image(e);
     
@@ -1320,10 +1227,11 @@ int main(int argc, char *argv[]) {
     SDL_LockSurface(e->img);
     SDL_SetRenderTarget(e->ren, NULL);
 
+    PrintDo(e);
     Do_it(e);
     
     if (e->interface==0)
-        ft_exit(e,0,"END");
+        ft_exit(e,0,"\nSee you !");
     
     while (1) // infinite loop
     {
@@ -1335,7 +1243,7 @@ int main(int argc, char *argv[]) {
         if (SDL_PollEvent(&ev) )                        //  events in the queue
         {
             if(ev.window.event == SDL_WINDOWEVENT_CLOSE)
-                ft_exit(e,0,"END");
+                ft_exit(e,0,"\nSee you !");
         }
 
     }
