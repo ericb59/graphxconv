@@ -1,6 +1,6 @@
 # graphxconv
-BMP Image Converter to 16 colors fixed palette 
-aphx Converter v0.5
+
+Graphx Converter v0.5
 Est un outil pour convertir des images BMP d'une taille de 256 x 192 pixels vers une palette fixe de 16 couleurs, comme le mode écran 2 du MSX, à l'aide de  l'algorithme de conversion CIEDE2000.
 
 L'outil converti l'image source et sauvegarde la nouvelle image au format MSX pour le Mode 2. La conversion peut prendre quelques dizaines de secondes, suivant la puissance de votre ordinateur.
