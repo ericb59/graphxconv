@@ -5,11 +5,9 @@
 //  Created by Eric Boez on 15/04/2019.
 //  Copyright © 2019 Eric Boez. All rights reserved.
 //
-
 // COMPIL WITH SDL2.0 LIBRARY
 //
 # include "converter.h"
-
 
 //**--------------------------------**
 //   Read And Use a Specific RGB
