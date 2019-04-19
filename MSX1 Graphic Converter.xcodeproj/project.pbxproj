@@ -33,7 +33,7 @@
 		C29BCF0322670EF300733DB2 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 		C29BCF052269069400733DB2 /* converter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = converter.h; sourceTree = "<group>"; };
 		C29BCF062269D37D00733DB2 /* msximages */ = {isa = PBXFileReference; lastKnownFileType = folder; path = msximages; sourceTree = "<group>"; };
-		C29BCF0B226A518A00733DB2 /* binaries Mac&Win */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "binaries Mac&Win"; sourceTree = "<group>"; };
+		C29BCF0C226A524E00733DB2 /* binaries */ = {isa = PBXFileReference; lastKnownFileType = folder; path = binaries; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,7 +68,7 @@
 		C29BCEF3226470F600733DB2 /* MSX1 Graphic Converter */ = {
 			isa = PBXGroup;
 			children = (
-				C29BCF0B226A518A00733DB2 /* binaries Mac&Win */,
+				C29BCF0C226A524E00733DB2 /* binaries */,
 				C29BCF062269D37D00733DB2 /* msximages */,
 				C29BCF0322670EF300733DB2 /* data */,
 				C29BCEFB2264717200733DB2 /* libs */,
