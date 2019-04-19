@@ -1235,6 +1235,7 @@ int main(int argc, char *argv[]) {
     
     while (1) // infinite loop
     {
+        SDL_render(e);
         e->clock=clock();
         SDL_PumpEvents();
         //if (ev.type==SDL_KEYDOWN)
