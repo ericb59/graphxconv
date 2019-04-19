@@ -38,10 +38,12 @@
 # define ORG_X          10                      // X position of Original image
 # define ORG_Y          10                      // Y position of Original image
 # define NB_PALETTE     6                       // How many Palette available
-# define TOLERANCE_MAX  100
-# define TOLERANCE_MIN  0
-# define DETAIL_MAX     255
-# define DETAIL_MIN     0
+# define TOLERANCE_MAX  100                     // Maximum level of the Toleance parameter
+# define TOLERANCE_MIN  0                       // minimum level of the Toleance parameter
+# define DETAIL_MAX     255                     // Maximum level of the Detail parameter
+# define DETAIL_MIN     0                       // Minimum level of the Detail parameter
+# define STEP_TOLERANCE 20                      // Changing Tolerance value Step in Graphical Interface
+# define STEP_DETAIL    20                      // Changing Setail value Step in Graphical Interface
 
 
 # define Pi 3.141592653589793238462643383279

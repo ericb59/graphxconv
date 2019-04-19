@@ -26,13 +26,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C29BCEF1226470F600733DB2 /* MSX1 Graphic Converter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "MSX1 Graphic Converter"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C29BCEF1226470F600733DB2 /* graphxconv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = graphxconv; sourceTree = BUILT_PRODUCTS_DIR; };
 		C29BCEF4226470F600733DB2 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		C29BCEFB2264717200733DB2 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		C29BCEFD226471A000733DB2 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = "MSX1 Graphic Converter/libs/SDL2.framework"; sourceTree = "<group>"; };
 		C29BCF0322670EF300733DB2 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = data; sourceTree = "<group>"; };
 		C29BCF052269069400733DB2 /* converter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = converter.h; sourceTree = "<group>"; };
 		C29BCF062269D37D00733DB2 /* msximages */ = {isa = PBXFileReference; lastKnownFileType = folder; path = msximages; sourceTree = "<group>"; };
+		C29BCF072269DF0100733DB2 /* bin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = bin; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,7 +60,7 @@
 		C29BCEF2226470F600733DB2 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C29BCEF1226470F600733DB2 /* MSX1 Graphic Converter */,
+				C29BCEF1226470F600733DB2 /* graphxconv */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +68,7 @@
 		C29BCEF3226470F600733DB2 /* MSX1 Graphic Converter */ = {
 			isa = PBXGroup;
 			children = (
+				C29BCF072269DF0100733DB2 /* bin */,
 				C29BCF062269D37D00733DB2 /* msximages */,
 				C29BCF0322670EF300733DB2 /* data */,
 				C29BCEFB2264717200733DB2 /* libs */,
@@ -101,7 +103,7 @@
 			);
 			name = "MSX1 Graphic Converter";
 			productName = "MSX1 Graphic Converter";
-			productReference = C29BCEF1226470F600733DB2 /* MSX1 Graphic Converter */;
+			productReference = C29BCEF1226470F600733DB2 /* graphxconv */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -240,13 +242,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEPLOYMENT_LOCATION = NO;
 				DEVELOPMENT_TEAM = 84AT6JUUZ5;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
+				INSTALL_PATH = "/Users/ericboez/Desktop/Xcode/MSX1\\ Graphic\\ Converter/MSX1\\ Graphic\\ Converter/bin";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = graphxconv;
 			};
 			name = Debug;
 		};
@@ -254,13 +258,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
+				DEPLOYMENT_LOCATION = NO;
 				DEVELOPMENT_TEAM = 84AT6JUUZ5;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
+				INSTALL_PATH = "/Users/ericboez/Desktop/Xcode/MSX1\\ Graphic\\ Converter/MSX1\\ Graphic\\ Converter/bin";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = graphxconv;
 			};
 			name = Release;
 		};

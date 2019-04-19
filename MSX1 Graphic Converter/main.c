@@ -152,7 +152,7 @@ int   key_hook(t_img *e)
         if (keystates[SDL_SCANCODE_1]  )                // Tolerance --
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
-            e->tolerance=e->tolerance-20;
+            e->tolerance=e->tolerance-STEP_TOLERANCE;
             if (e->tolerance<=TOLERANCE_MIN)
                 e->tolerance=TOLERANCE_MIN;
             PrintDo(e);
@@ -163,7 +163,7 @@ int   key_hook(t_img *e)
         if (keystates[SDL_SCANCODE_2] )                // Tolerance ++
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
-            e->tolerance=e->tolerance+20;
+            e->tolerance=e->tolerance+STEP_TOLERANCE;
             if (e->tolerance>=TOLERANCE_MAX)
                 e->tolerance=TOLERANCE_MAX;
             PrintDo(e);
@@ -175,7 +175,7 @@ int   key_hook(t_img *e)
         if (keystates[SDL_SCANCODE_9] )                // Detal level  --
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
-            e->detaillevel=e->detaillevel+20;
+            e->detaillevel=e->detaillevel+STEP_DETAIL;
             if (e->detaillevel>=DETAIL_MAX)
                 e->detaillevel=DETAIL_MAX;
             PrintDo(e);
@@ -185,7 +185,7 @@ int   key_hook(t_img *e)
         if (keystates[SDL_SCANCODE_8] )                // Detail Level --
         {
             e->click_clock=clock()+(CLOCKS_PER_SEC/10);
-            e->detaillevel=e->detaillevel-20;
+            e->detaillevel=e->detaillevel-STEP_DETAIL;
             if (e->detaillevel<=DETAIL_MIN)
                 e->detaillevel=DETAIL_MIN;
             PrintDo(e);
@@ -1080,7 +1080,7 @@ void Info(t_img *e)
 {
     printf("\n "); printf(NAME); printf(VERSION);printf(DATE);
     printf("\n is converting 256 x 192 pixels BMP Images \n to a fixed color palette using CIEDE2000 Algorythm");
-    printf("\n Original conver by Routine) by Leandro Correia");
+    printf("\n Original convesion Routine) by Leandro Correia");
     printf("\n This tool was coded in C, with SDL2 Graphic Library\n by Eric Boez 2019 - BZ Prod Game Studio");
     printf("\n For MSX1 Screen2 mode with 16 colors palette support.");
     printf("\n This tool is provided as is, with no guaranty\n Under the Creative Commons CC BY_SA 4.0 license");
