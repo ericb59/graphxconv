@@ -1006,7 +1006,7 @@ void MSXoutput(t_img *e)
     {
         for (i=0;i<=255;i++)
         {
-            fputc(i, f);
+            fputc((char)i, f);
         }
     }
     
