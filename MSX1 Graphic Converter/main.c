@@ -992,11 +992,14 @@ void MSXoutput(t_img *e)
     unsigned char MsxHeader[7]= {0xFE,0x00,0x00,0xFF,0x37,0x00,0x00};
     
     
-    FILE *f = fopen(g_argv[2], "w");
+    FILE *f = fopen(g_argv[2], "wb");
+    if (f==NULL)
+        ft_exit(e,1,"Writing output ile problem!");
+    
     for (i=0; i<7; i++) {
         fputc(MsxHeader[i], f);
     }
-    
+
     for (i=0;i<=6143;i++)
     {
         fputc(msxdump[i], f);
